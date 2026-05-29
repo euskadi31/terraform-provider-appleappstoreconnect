@@ -21,8 +21,11 @@ import (
 )
 
 const (
-	// baseURL is the base URL for the App Store Connect API.
-	baseURL = "https://api.appstoreconnect.apple.com/v1"
+	// baseURL is the base URL for the App Store Connect API. It intentionally
+	// omits the API version: each request's Endpoint carries its own version
+	// prefix (e.g. "/v1/passTypeIds", "/v2/inAppPurchases") because the API
+	// mixes v1 and v2 endpoints.
+	baseURL = "https://api.appstoreconnect.apple.com"
 
 	// tokenExpiration is the maximum lifetime of a JWT token (20 minutes).
 	tokenExpiration = 20 * time.Minute
