@@ -189,6 +189,8 @@ func (p *AppleAppStoreConnectProvider) Resources(ctx context.Context) []func() r
 		NewCertificateResource,
 		NewInAppPurchaseResource,
 		NewInAppPurchaseLocalizationResource,
+		NewInAppPurchasePriceScheduleResource,
+		NewInAppPurchaseAvailabilityResource,
 	}
 }
 
@@ -200,6 +202,7 @@ func (p *AppleAppStoreConnectProvider) DataSources(ctx context.Context) []func()
 		NewAppDataSource,
 		NewTerritoriesDataSource,
 		NewInAppPurchaseDataSource,
+		NewInAppPurchasePricePointDataSource,
 	}
 }
 
