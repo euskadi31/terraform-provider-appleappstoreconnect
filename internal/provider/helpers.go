@@ -11,6 +11,18 @@ import (
 	"net/url"
 )
 
+// RelationshipOne is a JSON:API to-one relationship payload, used in the
+// `relationships` object of create/update request bodies.
+type RelationshipOne struct {
+	Data RelationshipData `json:"data"`
+}
+
+// RelationshipMany is a JSON:API to-many relationship payload, used in the
+// `relationships` object of create/update request bodies.
+type RelationshipMany struct {
+	Data []RelationshipData `json:"data"`
+}
+
 // doPaginated performs a GET request and follows the App Store Connect
 // pagination links (`links.next`) until they are exhausted, returning every
 // element of the `data` arrays across all pages.

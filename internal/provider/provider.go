@@ -187,6 +187,8 @@ func (p *AppleAppStoreConnectProvider) Resources(ctx context.Context) []func() r
 	return []func() resource.Resource{
 		NewPassTypeIDResource,
 		NewCertificateResource,
+		NewInAppPurchaseResource,
+		NewInAppPurchaseLocalizationResource,
 	}
 }
 
@@ -197,6 +199,7 @@ func (p *AppleAppStoreConnectProvider) DataSources(ctx context.Context) []func()
 		NewCertificatesDataSource,
 		NewAppDataSource,
 		NewTerritoriesDataSource,
+		NewInAppPurchaseDataSource,
 	}
 }
 
