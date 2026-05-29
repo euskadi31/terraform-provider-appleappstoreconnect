@@ -195,6 +195,8 @@ func (p *AppleAppStoreConnectProvider) DataSources(ctx context.Context) []func()
 		NewPassTypeIDDataSource,
 		NewCertificateDataSource,
 		NewCertificatesDataSource,
+		NewAppDataSource,
+		NewTerritoriesDataSource,
 	}
 }
 

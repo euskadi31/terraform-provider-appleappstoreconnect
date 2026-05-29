@@ -82,7 +82,7 @@ func TestProviderDataSources(t *testing.T) {
 
 	dataSources := p.DataSources(ctx)
 
-	if len(dataSources) != 3 {
-		t.Errorf("Expected 3 data sources, got %d", len(dataSources))
+	if len(dataSources) != 5 {
+		t.Errorf("Expected 5 data sources, got %d", len(dataSources))
 	}
 }
