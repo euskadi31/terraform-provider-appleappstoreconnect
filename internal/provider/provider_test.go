@@ -71,8 +71,8 @@ func TestProviderResources(t *testing.T) {
 
 	resources := p.Resources(ctx)
 
-	if len(resources) != 12 {
-		t.Errorf("Expected 12 resources, got %d", len(resources))
+	if len(resources) != 13 {
+		t.Errorf("Expected 13 resources, got %d", len(resources))
 	}
 }
 

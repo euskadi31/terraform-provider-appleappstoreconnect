@@ -197,6 +197,7 @@ func (p *AppleAppStoreConnectProvider) Resources(ctx context.Context) []func() r
 		NewSubscriptionResource,
 		NewSubscriptionLocalizationResource,
 		NewSubscriptionPriceResource,
+		NewSubscriptionGroupSubmissionResource,
 	}
 }
 
