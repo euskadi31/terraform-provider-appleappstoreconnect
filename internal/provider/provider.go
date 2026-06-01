@@ -191,6 +191,7 @@ func (p *AppleAppStoreConnectProvider) Resources(ctx context.Context) []func() r
 		NewInAppPurchaseLocalizationResource,
 		NewInAppPurchasePriceScheduleResource,
 		NewInAppPurchaseAvailabilityResource,
+		NewInAppPurchaseSubmissionResource,
 	}
 }
 
