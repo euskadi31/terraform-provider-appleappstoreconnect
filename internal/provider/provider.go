@@ -196,6 +196,7 @@ func (p *AppleAppStoreConnectProvider) Resources(ctx context.Context) []func() r
 		NewSubscriptionGroupLocalizationResource,
 		NewSubscriptionResource,
 		NewSubscriptionLocalizationResource,
+		NewSubscriptionPriceResource,
 	}
 }
 
@@ -209,6 +210,8 @@ func (p *AppleAppStoreConnectProvider) DataSources(ctx context.Context) []func()
 		NewInAppPurchaseDataSource,
 		NewInAppPurchasePricePointDataSource,
 		NewSubscriptionDataSource,
+		NewSubscriptionPricePointDataSource,
+		NewSubscriptionAvailabilityDataSource,
 	}
 }
 
