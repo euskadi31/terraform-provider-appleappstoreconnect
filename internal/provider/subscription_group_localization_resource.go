@@ -184,11 +184,12 @@ func (r *SubscriptionGroupLocalizationResource) Read(ctx context.Context, req re
 	apiResp, err := r.client.Do(ctx, Request{
 		Method:   http.MethodGet,
 		Endpoint: fmt.Sprintf("/v1/subscriptionGroupLocalizations/%s", data.ID.ValueString()),
-		Query: map[string]string{
-			"include": "subscriptionGroup",
-		},
 	})
 	if err != nil {
+		if IsNotFound(err) {
+			resp.State.RemoveResource(ctx)
+			return
+		}
 		resp.Diagnostics.AddError(
 			"Client Error",
 			fmt.Sprintf("Unable to read subscription group localization, got error: %s", err),

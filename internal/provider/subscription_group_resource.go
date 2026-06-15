@@ -165,11 +165,12 @@ func (r *SubscriptionGroupResource) Read(ctx context.Context, req resource.ReadR
 	apiResp, err := r.client.Do(ctx, Request{
 		Method:   http.MethodGet,
 		Endpoint: fmt.Sprintf("/v1/subscriptionGroups/%s", data.ID.ValueString()),
-		Query: map[string]string{
-			"include": "app",
-		},
 	})
 	if err != nil {
+		if IsNotFound(err) {
+			resp.State.RemoveResource(ctx)
+			return
+		}
 		resp.Diagnostics.AddError(
 			"Client Error",
 			fmt.Sprintf("Unable to read subscription group, got error: %s", err),

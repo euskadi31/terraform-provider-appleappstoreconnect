@@ -209,6 +209,10 @@ func (r *InAppPurchasePriceScheduleResource) Read(ctx context.Context, req resou
 		Endpoint: fmt.Sprintf("/v1/inAppPurchasePriceSchedules/%s", data.ID.ValueString()),
 	})
 	if err != nil {
+		if IsNotFound(err) {
+			resp.State.RemoveResource(ctx)
+			return
+		}
 		resp.Diagnostics.AddError(
 			"Client Error",
 			fmt.Sprintf("Unable to read In-App Purchase price schedule, got error: %s", err),
