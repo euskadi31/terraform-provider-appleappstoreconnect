@@ -26,7 +26,7 @@ func TestAccSubscriptionDataSource(t *testing.T) {
 				Config: testAccSubscriptionDataSourceConfigByID(appID, suffix, productID),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr("data.appleappstoreconnect_subscription.test", "product_id", productID),
-					resource.TestCheckResourceAttr("data.appleappstoreconnect_subscription.test", "subscription_period", "P1M"),
+					resource.TestCheckResourceAttr("data.appleappstoreconnect_subscription.test", "subscription_period", "ONE_MONTH"),
 				),
 			},
 			// Read by filter (group + product ID).
@@ -52,7 +52,7 @@ resource "appleappstoreconnect_subscription" "test" {
   subscription_group_id = appleappstoreconnect_subscription_group.test.id
   product_id            = %[3]q
   name                  = "Data Source Test"
-  subscription_period   = "P1M"
+  subscription_period   = "ONE_MONTH"
 }
 
 data "appleappstoreconnect_subscription" "test" {
@@ -72,7 +72,7 @@ resource "appleappstoreconnect_subscription" "test" {
   subscription_group_id = appleappstoreconnect_subscription_group.test.id
   product_id            = %[3]q
   name                  = "Data Source Test"
-  subscription_period   = "P1M"
+  subscription_period   = "ONE_MONTH"
 }
 
 data "appleappstoreconnect_subscription" "test" {

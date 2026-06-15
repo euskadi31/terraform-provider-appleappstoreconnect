@@ -61,7 +61,7 @@ resource "appleappstoreconnect_subscription" "test" {
   subscription_group_id = appleappstoreconnect_subscription_group.test.id
   product_id            = %[3]q
   name                  = "Price Test"
-  subscription_period   = "P1M"
+  subscription_period   = "ONE_MONTH"
 }
 
 data "appleappstoreconnect_subscription_price_point" "usd_499" {

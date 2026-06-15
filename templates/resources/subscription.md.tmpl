@@ -16,7 +16,7 @@ resource "appleappstoreconnect_subscription" "monthly" {
   subscription_group_id = appleappstoreconnect_subscription_group.premium.id
   product_id            = "com.example.app.premium.monthly"
   name                  = "Premium Monthly"
-  subscription_period   = "P1M"
+  subscription_period   = "ONE_MONTH"
   family_sharable       = true
   group_level           = 1
 }

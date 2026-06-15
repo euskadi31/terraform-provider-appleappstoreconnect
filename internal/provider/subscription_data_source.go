@@ -160,7 +160,7 @@ func (d *SubscriptionDataSource) Read(ctx context.Context, req datasource.ReadRe
 			Method:   http.MethodGet,
 			Endpoint: fmt.Sprintf("/v1/subscriptions/%s", data.ID.ValueString()),
 			Query: map[string]string{
-				"include": "subscriptionGroup",
+				"include": "group",
 			},
 		})
 		if err != nil {
@@ -252,7 +252,7 @@ func (d *SubscriptionDataSource) updateModel(model *SubscriptionDataSourceModel,
 	model.ReviewNote = types.StringValue(subscription.Attributes.ReviewNote)
 	model.State = types.StringValue(subscription.Attributes.State)
 
-	if subscription.Relationships != nil && subscription.Relationships.SubscriptionGroup != nil && subscription.Relationships.SubscriptionGroup.Data != nil {
-		model.SubscriptionGroupID = types.StringValue(subscription.Relationships.SubscriptionGroup.Data.ID)
+	if subscription.Relationships != nil && subscription.Relationships.Group != nil && subscription.Relationships.Group.Data != nil {
+		model.SubscriptionGroupID = types.StringValue(subscription.Relationships.Group.Data.ID)
 	}
 }

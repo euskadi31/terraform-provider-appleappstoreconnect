@@ -3,13 +3,14 @@
 
 package provider
 
-// Subscription periods (ISO 8601 durations).
+// Subscription periods accepted by the App Store Connect API.
 const (
-	SubscriptionPeriodOneWeek     = "P1W"
-	SubscriptionPeriodOneMonth    = "P1M"
-	SubscriptionPeriodThreeMonths = "P3M"
-	SubscriptionPeriodSixMonths   = "P6M"
-	SubscriptionPeriodOneYear     = "P1Y"
+	SubscriptionPeriodOneWeek     = "ONE_WEEK"
+	SubscriptionPeriodOneMonth    = "ONE_MONTH"
+	SubscriptionPeriodTwoMonths   = "TWO_MONTHS"
+	SubscriptionPeriodThreeMonths = "THREE_MONTHS"
+	SubscriptionPeriodSixMonths   = "SIX_MONTHS"
+	SubscriptionPeriodOneYear     = "ONE_YEAR"
 )
 
 // Subscription represents an auto-renewable subscription in the App Store
@@ -35,7 +36,7 @@ type SubscriptionAttributes struct {
 
 // SubscriptionRelationships represents the relationships of a subscription.
 type SubscriptionRelationships struct {
-	SubscriptionGroup *Relationship `json:"subscriptionGroup,omitempty"`
+	Group *Relationship `json:"group,omitempty"`
 }
 
 // SubscriptionCreateRequest represents the request body for creating a
@@ -66,7 +67,7 @@ type SubscriptionCreateRequestAttributes struct {
 // SubscriptionCreateRequestRelationships represents the relationships for
 // creating a subscription.
 type SubscriptionCreateRequestRelationships struct {
-	SubscriptionGroup RelationshipOne `json:"subscriptionGroup"`
+	Group RelationshipOne `json:"group"`
 }
 
 // SubscriptionUpdateRequest represents the request body for updating a

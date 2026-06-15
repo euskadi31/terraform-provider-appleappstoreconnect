@@ -84,7 +84,7 @@ func (r *SubscriptionResource) Schema(ctx context.Context, req resource.SchemaRe
 				Required:            true,
 			},
 			"subscription_period": schema.StringAttribute{
-				MarkdownDescription: "The duration of a single subscription period. One of `P1W`, `P1M`, `P3M`, `P6M`, or `P1Y`. Changing this forces a new resource.",
+				MarkdownDescription: "The duration of a single subscription period. One of `ONE_WEEK`, `ONE_MONTH`, `TWO_MONTHS`, `THREE_MONTHS`, `SIX_MONTHS`, or `ONE_YEAR`. Changing this forces a new resource.",
 				Required:            true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
@@ -93,6 +93,7 @@ func (r *SubscriptionResource) Schema(ctx context.Context, req resource.SchemaRe
 					stringvalidator.OneOf(
 						SubscriptionPeriodOneWeek,
 						SubscriptionPeriodOneMonth,
+						SubscriptionPeriodTwoMonths,
 						SubscriptionPeriodThreeMonths,
 						SubscriptionPeriodSixMonths,
 						SubscriptionPeriodOneYear,
@@ -180,7 +181,7 @@ func (r *SubscriptionResource) Create(ctx context.Context, req resource.CreateRe
 			Type:       "subscriptions",
 			Attributes: attrs,
 			Relationships: SubscriptionCreateRequestRelationships{
-				SubscriptionGroup: RelationshipOne{
+				Group: RelationshipOne{
 					Data: RelationshipData{Type: "subscriptionGroups", ID: data.SubscriptionGroupID.ValueString()},
 				},
 			},
@@ -239,10 +240,14 @@ func (r *SubscriptionResource) Read(ctx context.Context, req resource.ReadReques
 		Method:   http.MethodGet,
 		Endpoint: fmt.Sprintf("/v1/subscriptions/%s", data.ID.ValueString()),
 		Query: map[string]string{
-			"include": "subscriptionGroup",
+			"include": "group",
 		},
 	})
 	if err != nil {
+		if IsNotFound(err) {
+			resp.State.RemoveResource(ctx)
+			return
+		}
 		resp.Diagnostics.AddError(
 			"Client Error",
 			fmt.Sprintf("Unable to read subscription, got error: %s", err),
@@ -356,7 +361,7 @@ func (r *SubscriptionResource) updateModel(model *SubscriptionResourceModel, sub
 		model.ReviewNote = types.StringValue(subscription.Attributes.ReviewNote)
 	}
 
-	if subscription.Relationships != nil && subscription.Relationships.SubscriptionGroup != nil && subscription.Relationships.SubscriptionGroup.Data != nil {
-		model.SubscriptionGroupID = types.StringValue(subscription.Relationships.SubscriptionGroup.Data.ID)
+	if subscription.Relationships != nil && subscription.Relationships.Group != nil && subscription.Relationships.Group.Data != nil {
+		model.SubscriptionGroupID = types.StringValue(subscription.Relationships.Group.Data.ID)
 	}
 }

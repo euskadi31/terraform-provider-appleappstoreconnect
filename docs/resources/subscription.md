@@ -16,7 +16,7 @@ resource "appleappstoreconnect_subscription" "monthly" {
   subscription_group_id = appleappstoreconnect_subscription_group.premium.id
   product_id            = "com.example.app.premium.monthly"
   name                  = "Premium Monthly"
-  subscription_period   = "P1M"
+  subscription_period   = "ONE_MONTH"
   family_sharable       = true
   group_level           = 1
 }
@@ -30,7 +30,7 @@ resource "appleappstoreconnect_subscription" "monthly" {
 - `name` (String) The reference name of the subscription, used in App Store Connect and Sales and Trends reports. This can be updated in place.
 - `product_id` (String) The unique product ID of the subscription (e.g., `com.example.app.premium.monthly`). Changing this forces a new resource.
 - `subscription_group_id` (String) The ID of the subscription group this subscription belongs to. Changing this forces a new resource.
-- `subscription_period` (String) The duration of a single subscription period. One of `P1W`, `P1M`, `P3M`, `P6M`, or `P1Y`. Changing this forces a new resource.
+- `subscription_period` (String) The duration of a single subscription period. One of `ONE_WEEK`, `ONE_MONTH`, `TWO_MONTHS`, `THREE_MONTHS`, `SIX_MONTHS`, or `ONE_YEAR`. Changing this forces a new resource.
 
 ### Optional
 

@@ -28,7 +28,7 @@ func TestAccSubscriptionResource(t *testing.T) {
 					resource.TestCheckResourceAttrSet("appleappstoreconnect_subscription.test", "id"),
 					resource.TestCheckResourceAttr("appleappstoreconnect_subscription.test", "product_id", productID),
 					resource.TestCheckResourceAttr("appleappstoreconnect_subscription.test", "name", "Premium Monthly"),
-					resource.TestCheckResourceAttr("appleappstoreconnect_subscription.test", "subscription_period", "P1M"),
+					resource.TestCheckResourceAttr("appleappstoreconnect_subscription.test", "subscription_period", "ONE_MONTH"),
 					resource.TestCheckResourceAttrPair(
 						"appleappstoreconnect_subscription.test", "subscription_group_id",
 						"appleappstoreconnect_subscription_group.test", "id",
@@ -63,7 +63,7 @@ resource "appleappstoreconnect_subscription" "test" {
   subscription_group_id = appleappstoreconnect_subscription_group.test.id
   product_id            = %[3]q
   name                  = %[4]q
-  subscription_period   = "P1M"
+  subscription_period   = "ONE_MONTH"
 }
 `, appID, suffix, productID, name)
 }
