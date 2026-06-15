@@ -129,43 +129,65 @@ func (r *SubscriptionPriceResource) Create(ctx context.Context, req resource.Cre
 		return
 	}
 
-	attrs := SubscriptionPriceCreateRequestAttributes{}
-	if !data.StartDate.IsNull() {
-		v := data.StartDate.ValueString()
-		attrs.StartDate = &v
-	}
-	if !data.PreserveCurrentPrice.IsNull() && !data.PreserveCurrentPrice.IsUnknown() {
-		v := data.PreserveCurrentPrice.ValueBool()
-		attrs.PreserveCurrentPrice = &v
+	subscriptionID := data.SubscriptionID.ValueString()
+	pricePointID := data.SubscriptionPricePointID.ValueString()
+	territory := data.Territory.ValueString()
+
+	var inlineAttrs *SubscriptionPriceInlineAttributes
+	if !data.StartDate.IsNull() || (!data.PreserveCurrentPrice.IsNull() && !data.PreserveCurrentPrice.IsUnknown()) {
+		inlineAttrs = &SubscriptionPriceInlineAttributes{}
+		if !data.StartDate.IsNull() {
+			v := data.StartDate.ValueString()
+			inlineAttrs.StartDate = &v
+		}
+		if !data.PreserveCurrentPrice.IsNull() && !data.PreserveCurrentPrice.IsUnknown() {
+			v := data.PreserveCurrentPrice.ValueBool()
+			inlineAttrs.PreserveCurrentPrice = &v
+		}
 	}
 
-	createReq := SubscriptionPriceCreateRequest{
-		Data: SubscriptionPriceCreateRequestData{
-			Type:       "subscriptionPrices",
-			Attributes: attrs,
-			Relationships: SubscriptionPriceCreateRequestRelationships{
-				Subscription: RelationshipOne{
-					Data: RelationshipData{Type: "subscriptions", ID: data.SubscriptionID.ValueString()},
+	var territoryRel *RelationshipOne
+	if territory != "" {
+		territoryRel = &RelationshipOne{
+			Data: RelationshipData{Type: "territories", ID: territory},
+		}
+	}
+
+	const localID = "${price-0}"
+	patchReq := SubscriptionPatchWithInlinePriceRequest{
+		Data: SubscriptionPatchData{
+			Type: "subscriptions",
+			ID:   subscriptionID,
+			Relationships: SubscriptionPatchRelationships{
+				Prices: SubscriptionPatchPricesRelationship{
+					Data: []RelationshipData{{Type: "subscriptionPrices", ID: localID}},
 				},
-				SubscriptionPricePoint: RelationshipOne{
-					Data: RelationshipData{Type: "subscriptionPricePoints", ID: data.SubscriptionPricePointID.ValueString()},
-				},
-				Territory: RelationshipOne{
-					Data: RelationshipData{Type: "territories", ID: data.Territory.ValueString()},
+			},
+		},
+		Included: []SubscriptionPriceInline{
+			{
+				Type:       "subscriptionPrices",
+				ID:         localID,
+				Attributes: inlineAttrs,
+				Relationships: SubscriptionPriceInlineRelationships{
+					SubscriptionPricePoint: RelationshipOne{
+						Data: RelationshipData{Type: "subscriptionPricePoints", ID: pricePointID},
+					},
+					Territory: territoryRel,
 				},
 			},
 		},
 	}
 
-	tflog.Debug(ctx, "Creating subscription price", map[string]any{
-		"subscription_id": data.SubscriptionID.ValueString(),
-		"territory":       data.Territory.ValueString(),
+	tflog.Debug(ctx, "Creating subscription price (inline PATCH)", map[string]any{
+		"subscription_id": subscriptionID,
+		"territory":       territory,
 	})
 
-	apiResp, err := r.client.Do(ctx, Request{
-		Method:   http.MethodPost,
-		Endpoint: "/v1/subscriptionPrices",
-		Body:     createReq,
+	_, err := r.client.Do(ctx, Request{
+		Method:   http.MethodPatch,
+		Endpoint: fmt.Sprintf("/v1/subscriptions/%s", subscriptionID),
+		Body:     patchReq,
 	})
 	if err != nil {
 		resp.Diagnostics.AddError(
@@ -175,24 +197,52 @@ func (r *SubscriptionPriceResource) Create(ctx context.Context, req resource.Cre
 		return
 	}
 
-	var price SubscriptionPrice
-	if err := json.Unmarshal(apiResp.Data, &price); err != nil {
+	// The PATCH response is the subscription itself; the new price's real ID is
+	// only known after a follow-up list. Match by territory — each subscription
+	// has at most one active price per territory.
+	elements, err := doPaginated(ctx, r.client, Request{
+		Method:   http.MethodGet,
+		Endpoint: fmt.Sprintf("/v1/subscriptions/%s/prices", subscriptionID),
+		Query:    map[string]string{"include": "territory", "limit": "200"},
+	})
+	if err != nil {
 		resp.Diagnostics.AddError(
-			"Parse Error",
-			fmt.Sprintf("Unable to parse subscription price response, got error: %s", err),
+			"Client Error",
+			fmt.Sprintf("Unable to list subscription prices after create, got error: %s", err),
 		)
 		return
 	}
 
-	if price.ID == "" {
+	var foundID string
+	for _, element := range elements {
+		var price SubscriptionPrice
+		if err := json.Unmarshal(element, &price); err != nil {
+			resp.Diagnostics.AddError(
+				"Parse Error",
+				fmt.Sprintf("Unable to parse subscription price, got error: %s", err),
+			)
+			return
+		}
+		if price.Relationships == nil ||
+			price.Relationships.Territory == nil ||
+			price.Relationships.Territory.Data == nil {
+			continue
+		}
+		if price.Relationships.Territory.Data.ID == territory {
+			foundID = price.ID
+			break
+		}
+	}
+
+	if foundID == "" {
 		resp.Diagnostics.AddError(
 			"Invalid API Response",
-			"The API response did not contain a valid ID for the created subscription price",
+			fmt.Sprintf("Created subscription price not found in /v1/subscriptions/%s/prices for territory %s after PATCH", subscriptionID, territory),
 		)
 		return
 	}
 
-	data.ID = types.StringValue(price.ID)
+	data.ID = types.StringValue(foundID)
 
 	resp.Diagnostics.Append(resp.State.Set(ctx, &data)...)
 }
@@ -213,6 +263,10 @@ func (r *SubscriptionPriceResource) Read(ctx context.Context, req resource.ReadR
 		Query:    map[string]string{"limit": "200"},
 	})
 	if err != nil {
+		if IsNotFound(err) {
+			resp.State.RemoveResource(ctx)
+			return
+		}
 		resp.Diagnostics.AddError(
 			"Client Error",
 			fmt.Sprintf("Unable to read subscription prices, got error: %s", err),

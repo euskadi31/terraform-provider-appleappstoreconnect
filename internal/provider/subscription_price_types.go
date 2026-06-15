@@ -26,33 +26,54 @@ type SubscriptionPriceRelationships struct {
 	Territory              *Relationship `json:"territory,omitempty"`
 }
 
-// SubscriptionPriceCreateRequest represents the request body for creating a
-// subscription price.
-type SubscriptionPriceCreateRequest struct {
-	Data SubscriptionPriceCreateRequestData `json:"data"`
+// SubscriptionPatchWithInlinePriceRequest mirrors PATCH /v1/subscriptions/{id}
+// with an inline subscriptionPrices resource. App Store Connect's
+// POST /v1/subscriptionPrices endpoint is reserved for *changes* to an existing
+// price — the initial price of a subscription must be created inline via this
+// PATCH using the ${local-id} convention (same pattern as IAP price schedule).
+type SubscriptionPatchWithInlinePriceRequest struct {
+	Data     SubscriptionPatchData     `json:"data"`
+	Included []SubscriptionPriceInline `json:"included"`
 }
 
-// SubscriptionPriceCreateRequestData represents the data for creating a
-// subscription price.
-type SubscriptionPriceCreateRequestData struct {
-	Type          string                                      `json:"type"`
-	Attributes    SubscriptionPriceCreateRequestAttributes    `json:"attributes"`
-	Relationships SubscriptionPriceCreateRequestRelationships `json:"relationships"`
+// SubscriptionPatchData is the top-level "data" of the PATCH body.
+type SubscriptionPatchData struct {
+	Type          string                         `json:"type"`
+	ID            string                         `json:"id"`
+	Relationships SubscriptionPatchRelationships `json:"relationships"`
 }
 
-// SubscriptionPriceCreateRequestAttributes represents the attributes for
-// creating a subscription price.
-type SubscriptionPriceCreateRequestAttributes struct {
+// SubscriptionPatchRelationships references the inlined prices by local-id.
+type SubscriptionPatchRelationships struct {
+	Prices SubscriptionPatchPricesRelationship `json:"prices"`
+}
+
+// SubscriptionPatchPricesRelationship lists the inlined price local-ids.
+type SubscriptionPatchPricesRelationship struct {
+	Data []RelationshipData `json:"data"`
+}
+
+// SubscriptionPriceInline is an inlined subscriptionPrices resource in the
+// PATCH's "included" array. Its ID is a synthetic local-id wrapped in ${...}.
+type SubscriptionPriceInline struct {
+	Type          string                               `json:"type"`
+	ID            string                               `json:"id"`
+	Attributes    *SubscriptionPriceInlineAttributes   `json:"attributes,omitempty"`
+	Relationships SubscriptionPriceInlineRelationships `json:"relationships"`
+}
+
+// SubscriptionPriceInlineAttributes carries the optional price attributes.
+type SubscriptionPriceInlineAttributes struct {
 	StartDate            *string `json:"startDate,omitempty"`
 	PreserveCurrentPrice *bool   `json:"preserveCurrentPrice,omitempty"`
 }
 
-// SubscriptionPriceCreateRequestRelationships represents the relationships for
-// creating a subscription price.
-type SubscriptionPriceCreateRequestRelationships struct {
-	Subscription           RelationshipOne `json:"subscription"`
-	SubscriptionPricePoint RelationshipOne `json:"subscriptionPricePoint"`
-	Territory              RelationshipOne `json:"territory"`
+// SubscriptionPriceInlineRelationships carries the required relationships for
+// the inlined price. `territory` is optional because the territory is encoded
+// in the subscriptionPricePoint ID.
+type SubscriptionPriceInlineRelationships struct {
+	SubscriptionPricePoint RelationshipOne  `json:"subscriptionPricePoint"`
+	Territory              *RelationshipOne `json:"territory,omitempty"`
 }
 
 // SubscriptionPriceResponse represents the response from the subscription price
