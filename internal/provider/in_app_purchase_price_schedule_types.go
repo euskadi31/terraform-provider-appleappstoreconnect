@@ -72,13 +72,14 @@ type IAPPriceScheduleResponse struct {
 
 // buildIAPPriceScheduleCreateRequest assembles the create request body,
 // linking each manual price to an inlined inAppPurchasePrices resource via a
-// synthetic reference ID ("price-0", "price-1", ...).
+// synthetic local-id reference. App Store Connect requires inline IDs to be
+// wrapped in ${...} (e.g. "${price-0}", "${price-1}").
 func buildIAPPriceScheduleCreateRequest(inAppPurchaseID, baseTerritory string, prices []manualPrice) IAPPriceScheduleCreateRequest {
 	refs := make([]RelationshipData, 0, len(prices))
 	included := make([]IAPPriceInline, 0, len(prices))
 
 	for i, p := range prices {
-		ref := fmt.Sprintf("price-%d", i)
+		ref := fmt.Sprintf("${price-%d}", i)
 		refs = append(refs, RelationshipData{Type: "inAppPurchasePrices", ID: ref})
 
 		inline := IAPPriceInline{

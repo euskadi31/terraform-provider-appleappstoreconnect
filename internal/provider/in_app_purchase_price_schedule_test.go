@@ -47,7 +47,7 @@ func TestBuildIAPPriceScheduleCreateRequest(t *testing.T) {
 		includedByID[inc.ID] = inc
 	}
 	for i, ref := range refs {
-		wantID := fmt.Sprintf("price-%d", i)
+		wantID := fmt.Sprintf("${price-%d}", i)
 		if ref.ID != wantID {
 			t.Errorf("ref[%d].id = %q, want %q", i, ref.ID, wantID)
 		}
@@ -65,10 +65,10 @@ func TestBuildIAPPriceScheduleCreateRequest(t *testing.T) {
 	}
 
 	// First price has no start date; second does.
-	if includedByID["price-0"].Attributes.StartDate != nil {
+	if includedByID["${price-0}"].Attributes.StartDate != nil {
 		t.Errorf("price-0 startDate should be nil")
 	}
-	if sd := includedByID["price-1"].Attributes.StartDate; sd == nil || *sd != "2025-06-01" {
+	if sd := includedByID["${price-1}"].Attributes.StartDate; sd == nil || *sd != "2025-06-01" {
 		t.Errorf("price-1 startDate = %v, want 2025-06-01", sd)
 	}
 

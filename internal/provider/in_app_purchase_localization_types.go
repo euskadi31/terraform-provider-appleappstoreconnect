@@ -24,7 +24,7 @@ type InAppPurchaseLocalizationAttributes struct {
 // InAppPurchaseLocalizationRelationships represents the relationships of an
 // In-App Purchase localization.
 type InAppPurchaseLocalizationRelationships struct {
-	InAppPurchase *Relationship `json:"inAppPurchase,omitempty"`
+	InAppPurchase *Relationship `json:"inAppPurchaseV2,omitempty"`
 }
 
 // InAppPurchaseLocalizationCreateRequest represents the request body for
@@ -52,7 +52,7 @@ type InAppPurchaseLocalizationCreateRequestAttributes struct {
 // InAppPurchaseLocalizationCreateRequestRelationships represents the
 // relationships for creating an In-App Purchase localization.
 type InAppPurchaseLocalizationCreateRequestRelationships struct {
-	InAppPurchase RelationshipOne `json:"inAppPurchase"`
+	InAppPurchase RelationshipOne `json:"inAppPurchaseV2"`
 }
 
 // InAppPurchaseLocalizationUpdateRequest represents the request body for

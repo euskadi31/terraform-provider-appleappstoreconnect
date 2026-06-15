@@ -153,10 +153,7 @@ func (d *InAppPurchaseDataSource) Read(ctx context.Context, req datasource.ReadR
 
 		apiResp, err := d.client.Do(ctx, Request{
 			Method:   http.MethodGet,
-			Endpoint: fmt.Sprintf("/v1/inAppPurchases/%s", data.ID.ValueString()),
-			Query: map[string]string{
-				"include": "app",
-			},
+			Endpoint: fmt.Sprintf("/v2/inAppPurchases/%s", data.ID.ValueString()),
 		})
 		if err != nil {
 			resp.Diagnostics.AddError(
