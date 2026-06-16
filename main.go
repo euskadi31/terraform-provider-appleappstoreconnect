@@ -8,8 +8,8 @@ import (
 	"flag"
 	"log"
 
-	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/euskadi31/terraform-provider-appleappstoreconnect/internal/provider"
+	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 )
 
 var (
