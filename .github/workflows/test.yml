@@ -57,14 +57,10 @@ jobs:
                     (echo; echo "Unexpected difference in directories after code generation."; \
                      echo "Run 'make generate' command and commit."; exit 1)
 
-    # Run acceptance tests in a matrix with Terraform CLI versions.
-    # Skipped automatically when the Apple App Store Connect credentials are
-    # not configured (e.g. on forks or PRs from external contributors) so the
-    # workflow does not fail for lack of secrets.
+    # Run acceptance tests in a matrix with Terraform CLI versions
     test:
         name: Terraform Provider Acceptance Tests
         needs: build
-        if: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID != '' }}
         runs-on: ubuntu-latest
         timeout-minutes: 15
         strategy:
@@ -85,6 +81,10 @@ jobs:
                   terraform_version: ${{ matrix.terraform }}
                   terraform_wrapper: false
             - run: go mod download
+            # The acceptance test step exits 0 with a skip message when the
+            # Apple App Store Connect credentials are not configured (e.g. on
+            # forks or PRs from external contributors) so the workflow does
+            # not fail for lack of secrets.
             - env:
                   APP_STORE_CONNECT_ISSUER_ID:
                       ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
@@ -93,5 +93,10 @@ jobs:
                   APP_STORE_CONNECT_PRIVATE_KEY:
                       ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY }}
                   TF_ACC: "1"
-              run: go test -v -cover ./internal/provider/
+              run: |
+                  if [ -z "$APP_STORE_CONNECT_ISSUER_ID" ]; then
+                      echo "Apple App Store Connect credentials not configured, skipping acceptance tests."
+                      exit 0
+                  fi
+                  go test -v -cover ./internal/provider/
               timeout-minutes: 10
