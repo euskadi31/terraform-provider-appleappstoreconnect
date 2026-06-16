@@ -3,7 +3,7 @@
 terraform {
   required_providers {
     appleappstoreconnect = {
-      source  = "truetickets/appleappstoreconnect"
+      source  = "euskadi31/appleappstoreconnect"
       version = "~> 0.1"
     }
     tls = {

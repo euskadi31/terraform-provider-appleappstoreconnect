@@ -14,7 +14,7 @@ The Apple App Store Connect provider allows you to manage App Store Connect reso
 terraform {
   required_providers {
     appleappstoreconnect = {
-      source  = "truetickets/appleappstoreconnect"
+      source  = "euskadi31/appleappstoreconnect"
       version = "~> 0.1"
     }
   }

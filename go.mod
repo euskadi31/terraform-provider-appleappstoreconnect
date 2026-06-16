@@ -1,4 +1,4 @@
-module github.com/truetickets/terraform-provider-appleappstoreconnect
+module github.com/euskadi31/terraform-provider-appleappstoreconnect
 
 go 1.25.8
 

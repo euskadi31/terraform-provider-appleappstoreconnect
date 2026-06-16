@@ -35,8 +35,8 @@ Certificates used in Apple Wallet pass development.
 terraform {
   required_providers {
     appleappstoreconnect = {
-      source  = "truetickets/appleappstoreconnect"
-      version = "~> 1.2"
+      source  = "euskadi31/appleappstoreconnect"
+      version = "~> 0.1"
     }
   }
 }

@@ -9,7 +9,7 @@ import (
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
-	"github.com/truetickets/terraform-provider-appleappstoreconnect/internal/provider"
+	"github.com/euskadi31/terraform-provider-appleappstoreconnect/internal/provider"
 )
 
 var (
@@ -29,7 +29,7 @@ func main() {
 
 	opts := providerserver.ServeOpts{
 		// Provider address for Apple App Store Connect
-		Address: "registry.opentofu.org/truetickets/appleappstoreconnect",
+		Address: "registry.terraform.io/euskadi31/appleappstoreconnect",
 		Debug:   debug,
 	}
 
