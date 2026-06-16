@@ -57,10 +57,14 @@ jobs:
                     (echo; echo "Unexpected difference in directories after code generation."; \
                      echo "Run 'make generate' command and commit."; exit 1)
 
-    # Run acceptance tests in a matrix with Terraform CLI versions
+    # Run acceptance tests in a matrix with Terraform CLI versions.
+    # Skipped automatically when the Apple App Store Connect credentials are
+    # not configured (e.g. on forks or PRs from external contributors) so the
+    # workflow does not fail for lack of secrets.
     test:
         name: Terraform Provider Acceptance Tests
         needs: build
+        if: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID != '' }}
         runs-on: ubuntu-latest
         timeout-minutes: 15
         strategy:
